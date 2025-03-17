@@ -1,2 +1,1 @@
-# Proiect-MDS
-Proiectul la materia MDS
+https://trello.com/b/PFv4H5ZT/proiect-mds
