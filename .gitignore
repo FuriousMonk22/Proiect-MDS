@@ -3,3 +3,4 @@ library/
 logs/
 Assembly-CSharp.csproj
 Proiect MDS.sln
+temp/

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0ae171ef2d99d984aa935df51ac1d8f8
+guid: bc9777942b9ed874aa70dfe82bec99c6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2187295081542215612
-    second: yellow-happy-smile-face-emoticon-png_0
+      213: 8114558571150798300
+    second: background(1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: yellow-happy-smile-face-emoticon-png_0
+      name: background(1)_0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 34
-        width: 332
-        height: 332
+        x: 0
+        y: 0
+        width: 960
+        height: 768
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 44897bd46ba25a1e0800000000000000
-      internalID: -2187295081542215612
+      spriteID: cdd6b861704bc9070800000000000000
+      internalID: 8114558571150798300
       vertices: []
       indices: 
       edges: []
