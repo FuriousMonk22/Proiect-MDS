@@ -3,10 +3,18 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    public float jumpForce = 10f;
+    public float jumpForce = 7f;
+    public float acceleration = 10f;
+
+    [Header("Jump Control")]
+    public float lowGravityScale = 0.5f;   // While holding jump and rising
+    public float fallGravityScale = 2f;    // When falling or not holding jump
+    public float defaultGravityScale = 1f; // Normal gravity
 
     private Rigidbody2D plr;
     private bool isGrounded;
+    private float currentVelocityX;
+    private bool jumpRequested = false;
 
     [Header("Ground Check")]
     public Transform groundCheck;
@@ -19,24 +27,52 @@ public class Player : MonoBehaviour
     }
 
     private void Update()
-{
-    // Horizontal movement
-    float moveInput = 0f;
-
-    if (Input.GetKey(KeyCode.A))
-        moveInput = -1f;
-    else if (Input.GetKey(KeyCode.D))
-        moveInput = 1f;
-
-    plr.linearVelocity = new Vector2(moveInput * moveSpeed, plr.linearVelocity.y);
-
-    // Ground check
-    isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-
-    // Jumping
-    if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
     {
-        plr.linearVelocity = new Vector2(plr.linearVelocity.x, jumpForce);
+        // Jump input
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            jumpRequested = true;
+        }
     }
+
+    private void FixedUpdate()
+    {
+        // Ground check
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        // Horizontal movement
+        float moveInput = 0f;
+        if (Input.GetKey(KeyCode.A))
+            moveInput = -1f;
+        else if (Input.GetKey(KeyCode.D))
+            moveInput = 1f;
+
+        float targetVelocityX = moveInput * moveSpeed;
+        currentVelocityX = Mathf.Lerp(plr.linearVelocity.x, targetVelocityX, acceleration * Time.fixedDeltaTime);
+        plr.linearVelocity = new Vector2(currentVelocityX, plr.linearVelocity.y);
+
+        // Apply jump
+        if (jumpRequested)
+        {
+            plr.linearVelocity = new Vector2(plr.linearVelocity.x, jumpForce);
+            jumpRequested = false;
+        }
+
+        // Gravity control for variable jump height
+        if (plr.linearVelocity.y > 0 && Input.GetKey(KeyCode.Space))
+        {
+            // Rising and jump held: floatier jump
+            plr.gravityScale = lowGravityScale;
+        }
+        else if (plr.linearVelocity.y < 0)
+        {
+            // Falling: increase gravity for snappier fall
+            plr.gravityScale = fallGravityScale;
+        }
+        else
+        {
+            // Default gravity (e.g., rising but jump not held)
+            plr.gravityScale = defaultGravityScale;
+        }
     }
 }
