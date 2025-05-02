@@ -21,6 +21,12 @@ public class Player : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
+    [Header("Health")]
+    public int maxHealth = 100;
+    public int currentHealth;
+
+    public HealthBar healthBar;
+
     private void Awake()
     {
         plr = GetComponent<Rigidbody2D>();
@@ -37,6 +43,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        healthBar.SetHealth((float)currentHealth / (float)maxHealth);
         // Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
@@ -74,5 +81,14 @@ public class Player : MonoBehaviour
             // Default gravity (e.g., rising but jump not held)
             plr.gravityScale = defaultGravityScale;
         }
+    }
+
+    public void TakeDamage(int amount)
+    {
+        currentHealth -= amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        // If using image-based health bar
+        // healthBar.SetHealthImageFill((float)currentHealth / maxHealth);
     }
 }
