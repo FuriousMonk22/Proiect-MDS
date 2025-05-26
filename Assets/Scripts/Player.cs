@@ -42,10 +42,23 @@ public class Player : MonoBehaviour
     public Transform attackPoint;
     [Header("Attack Settings")]
     public float attackRange = 0.5f;       // cât de mare e zona în care lovește
-    public int attackDamage = 20;         // cât damage dă
+    public int attackDamage = 20;         // cât damage da
     public LayerMask enemyLayers;         // ce e considerat inamic
-    public float attackRate = 1f;         // cât de des poți ataca
-    private float nextAttackTime = 0f;    // timpul când poți ataca din nou
+    public float attackRate = 1f;         // cat de des poti ataca
+    private float nextAttackTime = 0f;    // timpul când poti ataca din nou
+
+    [Header("Dash Settings")]
+    public float dashSpeed = 20f; // viteza cu care se misca playerul in dash
+    public float dashDuration = 0.2f; // cat dureaza dash-ul
+    private bool isDashing = false; // verifica daca playerul este in dash
+    private float dashTimer; // timer pentru dash
+
+    private float lastDKeyTime = -1f; // timpul ultimei apasari pe D
+
+    private float lastAKeyTime = -1f; // timpul ultimei apasari pe A
+
+    public float doubleTapTime = 0.25f; // timpul in care trebuie sa apesi de 2 ori D sau A pentru a face dash
+
 
     private void Awake() //initializare
     {
@@ -65,15 +78,38 @@ public class Player : MonoBehaviour
         if (Time.time >= nextAttackTime)
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                Attack(); 
+                Attack();
                 nextAttackTime = Time.time + 1f / attackRate; //seteaza timpul urmatorului atac
             }
+
+        if (Input.GetKeyDown(KeyCode.D))
+            {
+                if (Time.time - lastDKeyTime < doubleTapTime && isGrounded && !isDashing)
+                {
+                    StartCoroutine(PerformDash(1)); // 1 = spre dreapta
+                }
+                lastDKeyTime = Time.time;
+            }
+        
+        if (Input.GetKeyDown(KeyCode.A))
+            {
+                if (Time.time - lastAKeyTime < doubleTapTime && isGrounded && !isDashing)
+                {
+                    StartCoroutine(PerformDash(-1)); // -1 = spre stânga
+                }
+                lastAKeyTime = Time.time;
+            }
+
     }
 
     private void FixedUpdate() //logica fizica
     {
         if (isDead)
             return; //daca playerul este mort, nu mai face nimic
+
+        if (isDashing)
+            return;
+    
 
         healthBar.SetHealth((float)PlayerPrefs.GetInt("CurrentHealth") / (float)maxHealth);
 
@@ -147,9 +183,9 @@ public class Player : MonoBehaviour
     public void TakeDamage(int amount)
     {
         currentHealth = PlayerPrefs.GetInt("CurrentHealth"); //prindem viata curenta a playerului
-        currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        PlayerPrefs.SetInt("CurrentHealth", currentHealth);
+        currentHealth -= amount; //scade viata playerului
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); //asigura-te ca viata nu scade sub 0
+        PlayerPrefs.SetInt("CurrentHealth", currentHealth); //seteaza viata curenta a playerului
 
         // If using image-based health bar
         // healthBar.SetHealthImageFill((float)currentHealth / maxHealth);
@@ -171,6 +207,24 @@ public class Player : MonoBehaviour
         ReturnToMenu(); //returneaza la meniu
     }
 
+    private IEnumerator PerformDash(int direction)
+    {
+        isDashing = true; //seteaza playerul ca fiind in dash
+        float originalGravity = plr.gravityScale; //prinde gravitatia originala
+        plr.gravityScale = 0f; //seteaza gravitatia la 0 pentru a nu cadea in timpul dash-ului
+        float startTime = Time.time; //prinde timpul de start al dash-ului
+
+        while (Time.time < startTime + dashDuration) //cat timp este in dash
+        {
+            plr.linearVelocity = new Vector2(direction * dashSpeed, 0f); //aplica viteza de dash
+            yield return null; //asteapta un frame
+        }
+
+        plr.gravityScale = originalGravity; //restabileste gravitatia originala
+        isDashing = false; //seteaza playerul ca fiind in afara dash-ului
+    }
+
+
     private void ReturnToMenu() //functie care returneaza la meniu
     {
         SceneManager.LoadScene("MainScene"); //schimba scena la MainMenu
@@ -185,7 +239,6 @@ public class Player : MonoBehaviour
     
         foreach (Collider2D enemy in hitEnemies)
         {
-            Debug.Log("Hit " + enemy.name); //afiseaza in consola numele inamicului lovit
             enemy.GetComponent<Enemy>().TakeDamage(attackDamage); //aplica damage inamicilor
             Vector3 spawnPos = enemy.transform.position + new Vector3(0, 1f, 0); // deasupra inamicului
         }

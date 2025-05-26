@@ -19,7 +19,6 @@ public class Flame : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log($"Collided with {collision.gameObject.name}, tag = {collision.gameObject.tag}");
         if (collision.gameObject.CompareTag("Player"))
         {
             if(PlayerPrefs.GetInt("CurrentHealth") > 0)

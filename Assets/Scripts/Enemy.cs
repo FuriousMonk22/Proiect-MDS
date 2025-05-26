@@ -1,15 +1,19 @@
 using UnityEngine;
+using TMPro;
 
 public class Enemy : MonoBehaviour
 {
     public GameObject wallBarrier;
     public GameObject fireballPrefab;
-    public Transform firePoint; // punctul din care pleacă flacăra
-    public float attackRange = 5f; // distanța de la care trage
+    
+    public GameObject popUpPrefab;
+
+    public Transform firePoint; // punctul din care pleaca flacara
+    public float attackRange = 5f; // distanta de la care trage
 
     public float speed = 2f;
     public int damage = 10;
-    public float attackCooldown = 2.5f; 
+    public float attackCooldown = 2.5f;
     public int health = 50;
 
     private Transform player;
@@ -18,13 +22,21 @@ public class Enemy : MonoBehaviour
     public GameObject coinPrefab; // Reference to the coin prefab
     public int coinCount = 3; // Number of coins to drop when the monster dies
 
-    private Vector3 originalScale; // <-- Adăugat
+    private Vector3 originalScale; // Adaugat
     private Animator anim;
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        originalScale = transform.localScale; // <-- Salvăm scala originală
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+        else
+        {
+            Debug.LogWarning("Player nu a fost găsit în scenă de Enemy.cs");
+        }
+        originalScale = transform.localScale; // Salvam scala originala
         anim = GetComponent<Animator>();
     }
 
@@ -32,7 +44,7 @@ public class Enemy : MonoBehaviour
     {
         GameObject fireball = Instantiate(fireballPrefab, firePoint.position, Quaternion.identity);
         fireball.transform.localScale = new Vector3(2f, 2f, 1f);
-        fireball.GetComponent<Rigidbody2D>().linearVelocity = direction * 6f; // viteza flăcării
+        fireball.GetComponent<Rigidbody2D>().linearVelocity = direction * 6f; // viteza flăcarii
     }
 
 
@@ -46,13 +58,13 @@ public class Enemy : MonoBehaviour
             bool isInRange = distance <= attackRange;
             bool isTooClose = distance < 1f;
 
-            // Dacă e prea aproape, nu mai trage, eventual fugi sau stai
+            // Daca e prea aproape, nu mai trage, eventual fugi sau stai
             if (isInRange && !isTooClose && PlayerPrefs.GetInt("CurrentHealth") > 0)
             {
                 anim.SetBool("walk", false);
-                transform.position = transform.position; // stă pe loc
+                transform.position = transform.position; // sta pe loc
 
-                // atacă la interval de timp
+                // ataca la interval de timp
                 if (Time.time > lastAttackTime + attackCooldown)
                 {
                     anim.SetTrigger("attack");
@@ -74,14 +86,14 @@ public class Enemy : MonoBehaviour
     }
 
     private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player") && Time.time > lastAttackTime + attackCooldown)
-        {   
-            // Atacă jucătorul
+    {   
+        if (collision.gameObject.CompareTag("Player") && Time.time > lastAttackTime + attackCooldown) // Verifica daca a trecut timpul de atac
+        {
+            // Ataca jucătorul
             Vector2 direction = collision.transform.position - transform.position;
-            direction.Normalize(); // Normalizează direcția pentru a obține un vector unitate
+            direction.Normalize(); // Normalizează directia pentru a obtine un vector unitate
 
-            // Verifică dacă inamicul este în raza de atac
+            // Verifica daca inamicul este in raza de atac
             if (direction.magnitude <= attackRange && PlayerPrefs.GetInt("CurrentHealth") > 0)
             {
                 anim.SetTrigger("attack"); // Trigger pentru atac
@@ -90,23 +102,31 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+
     public void TakeDamage(int amount)
     {
-        health -= amount;
+        health -= amount; // Scade viata inamicului
         anim.SetTrigger("gethit"); // Trigger pentru a lua damage
+
+        GameObject popUp = Instantiate(popUpPrefab, transform.position, Quaternion.identity);
+        popUp.GetComponentInChildren<TMP_Text>().text = amount.ToString();
+        
         if (health <= 0)
         {
             wallBarrier.SetActive(false);
             anim.SetTrigger("death"); // Trigger pentru moarte
-            this.enabled = false; // Dezactivează scriptul inamicului
-            Destroy(gameObject, 1.1f); // Distruge inamicul după 1 secunde
+            this.enabled = false; // Dezactiveaza scriptul inamicului
+            Destroy(gameObject, 1.1f); // Distruge inamicul după 1.1 secunda
             for (int i = 0; i < coinCount; i++)
-                {
-                    // Spawn a coin at the monster's position with a random offset (to avoid overlapping coins)
-                    Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0);
-                    Instantiate(coinPrefab, transform.position + randomOffset, Quaternion.identity);
-                }
+            {
+                // Spawn a coin at the monster's position with a random offset (to avoid overlapping coins)
+                Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0);
+                Instantiate(coinPrefab, transform.position + randomOffset, Quaternion.identity);
+            }
         }
     }
+    
+    
 
 }
