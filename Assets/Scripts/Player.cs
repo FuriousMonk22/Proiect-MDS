@@ -41,8 +41,8 @@ public class Player : MonoBehaviour
 
     public Transform attackPoint;
     [Header("Attack Settings")]
-    public float attackRange = 0.5f;       // cât de mare e zona în care lovește
-    public int attackDamage = 20;         // cât damage da
+    public float attackRange = 0.5f;       // cat de mare e zona în care loveste
+    public int attackDamage = 20;         // cat damage da
     public LayerMask enemyLayers;         // ce e considerat inamic
     public float attackRate = 1f;         // cat de des poti ataca
     private float nextAttackTime = 0f;    // timpul când poti ataca din nou
@@ -83,22 +83,22 @@ public class Player : MonoBehaviour
             }
 
         if (Input.GetKeyDown(KeyCode.D))
+        {
+            if (Time.time - lastDKeyTime < doubleTapTime && isGrounded && !isDashing)
             {
-                if (Time.time - lastDKeyTime < doubleTapTime && isGrounded && !isDashing)
-                {
-                    StartCoroutine(PerformDash(1)); // 1 = spre dreapta
-                }
-                lastDKeyTime = Time.time;
+                StartCoroutine(PerformDash(1)); // 1 = spre dreapta
             }
-        
+            lastDKeyTime = Time.time;
+        }
+
         if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (Time.time - lastAKeyTime < doubleTapTime && isGrounded && !isDashing)
             {
-                if (Time.time - lastAKeyTime < doubleTapTime && isGrounded && !isDashing)
-                {
-                    StartCoroutine(PerformDash(-1)); // -1 = spre stânga
-                }
-                lastAKeyTime = Time.time;
+                StartCoroutine(PerformDash(-1)); // -1 = spre stânga
             }
+            lastAKeyTime = Time.time;
+        }
 
     }
 
@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
 
         if (isDashing)
             return;
-    
+
 
         healthBar.SetHealth((float)PlayerPrefs.GetInt("CurrentHealth") / (float)maxHealth);
 
@@ -173,7 +173,8 @@ public class Player : MonoBehaviour
 
 
         if (PlayerPrefs.GetInt("CurrentHealth") <= 0 && !isDead) //daca playerul nu mai are viata
-        {   isDead = true; //seteaza playerul ca fiind mort
+        {
+            isDead = true; //seteaza playerul ca fiind mort
             anim.SetTrigger("Dead"); // Trigger pentru animatia de moarte
             plr.linearVelocity = Vector2.zero; //opreste playerul
             plr.gravityScale = defaultGravityScale; //seteaza gravitatia la valoarea normala
@@ -196,13 +197,28 @@ public class Player : MonoBehaviour
         coins += amount;
     }
 
+    public bool TryBuy(int price)
+    {
+        if (coins >= price)
+        {
+            coins -= price;
+            return true;
+        }
+        else
+        {
+            Debug.Log("Nu ai suficienți bani!");
+            return false;
+        }
+    }
+
+
     private IEnumerator DeathSequence() //secventa de moarte
     {
         if (gameOver != null) //verifica daca textul de Game Over este setat
         {
             gameOver.SetActive(true); //activeaza textul de Game Over
         }
-        
+
         yield return new WaitForSeconds(5f); //asteapta 5 secunde
         ReturnToMenu(); //returneaza la meniu
     }
@@ -236,11 +252,18 @@ public class Player : MonoBehaviour
 
         //Gaseste toti inamicii in zona de atac
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-    
-        foreach (Collider2D enemy in hitEnemies)
+
+        foreach (Collider2D enemyCollider in hitEnemies)
         {
-            enemy.GetComponent<Enemy>().TakeDamage(attackDamage); //aplica damage inamicilor
-            Vector3 spawnPos = enemy.transform.position + new Vector3(0, 1f, 0); // deasupra inamicului
+            BaseEnemy enemy = enemyCollider.GetComponent<BaseEnemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(attackDamage);
+                Vector3 spawnPos = enemy.transform.position + new Vector3(0, 1f, 0);
+                // Poți face spawn la damage popup aici dacă vrei
+            }
         }
     }
 }
+
+
