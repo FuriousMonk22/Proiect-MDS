@@ -59,12 +59,16 @@ public class Player : MonoBehaviour
 
     public float doubleTapTime = 0.25f; // timpul in care trebuie sa apesi de 2 ori D sau A pentru a face dash
 
+    public bool canMove = false;
+
 
     private void Awake() //initializare
     {
         plr = GetComponent<Rigidbody2D>(); //prindem componenta Rigidbody2D a playerului
         anim = GetComponent<Animator>(); //prindem componenta Animator a playerului
         PlayerPrefs.SetInt("CurrentHealth", currentHealth);
+
+        canMove = true;
     }
 
     private void Update() //input de la tastatura
@@ -109,6 +113,15 @@ public class Player : MonoBehaviour
 
         if (isDashing)
             return;
+
+        
+        if (!canMove)
+        {
+            plr.linearVelocity = Vector2.zero; // oprește complet mișcarea
+            anim.SetBool("run", false); // oprește animația de alergare
+            return;
+        }
+
 
 
         healthBar.SetHealth((float)PlayerPrefs.GetInt("CurrentHealth") / (float)maxHealth);
@@ -264,6 +277,16 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+    public void Heal(int amount)
+    {
+        currentHealth = PlayerPrefs.GetInt("CurrentHealth");
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        PlayerPrefs.SetInt("CurrentHealth", currentHealth);
+        Debug.Log("Player healed! HP = " + currentHealth);
+    }
+
 }
 
 
