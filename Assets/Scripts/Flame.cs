@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Flame : MonoBehaviour
+public class FlameHoming : MonoBehaviour
 {
     public int damage = 10;
     public float lifeTime = 3f;

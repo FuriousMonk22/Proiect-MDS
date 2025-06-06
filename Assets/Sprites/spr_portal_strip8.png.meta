@@ -58,7 +58,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      spr_portal_strip8_0: 1662196148730587656
+      spr_portal_strip8_1: 3943153557054608232
+      spr_portal_strip8_2: -2205878135951597191
+      spr_portal_strip8_3: -2292021264105968529
+      spr_portal_strip8_4: -7481167484251817437
+      spr_portal_strip8_5: -5386621748451834518
+      spr_portal_strip8_6: 1446183060887665078
+      spr_portal_strip8_7: -5161516970890202720
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

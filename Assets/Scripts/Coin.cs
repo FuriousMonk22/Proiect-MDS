@@ -1,20 +1,20 @@
-// Coin.cs (on your Coin prefab or object)
 using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
+    [Tooltip("How many coins this object gives when collected")]
+    public int coinValue = 1;
+
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if collided object has the "Player" tag
         if (collision.gameObject.CompareTag("Player"))
         {
-            // Try to get the Player component
             Player player = collision.gameObject.GetComponent<Player>();
             
-            if (player != null) // Ensure the Player script exists
+            if (player != null)
             {
-                player.AddCoin(1); // Increment coins
-                Destroy(gameObject); // Destroy the coin
+                player.AddCoin(coinValue);  // Use coinValue here
+                Destroy(gameObject);
             }
             else
             {
