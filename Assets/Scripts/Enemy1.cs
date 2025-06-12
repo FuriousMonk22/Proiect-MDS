@@ -43,8 +43,13 @@ public class Enemy1 : BaseEnemy
         Vector2 direction = player.position - transform.position;
         float distance = direction.magnitude;
 
+        if (distance > 10) {
+            anim.SetBool("walk", false);
+            return;
+        }
+
         // Flip spre jucător
-        Vector3 scale = originalScale;
+            Vector3 scale = originalScale;
         scale.x *= direction.x > 0 ? 1 : -1;
         transform.localScale = scale;
 
