@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
     public float dashSpeed = 20f; // viteza cu care se misca playerul in dash
     public float dashDuration = 0.2f; // cat dureaza dash-ul
     private bool isDashing = false; // verifica daca playerul este in dash
-    private float dashTimer; // timer pentru dash
+    private float dashTimer = 0.25f; // timer pentru dash
 
     private float lastDKeyTime = -1f; // timpul ultimei apasari pe D
 
@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
             lastAKeyTime = Time.time;
         }
 
+        anim.SetBool("grounded", isGrounded);
     }
 
     private void FixedUpdate() //logica fizica
