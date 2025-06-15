@@ -74,7 +74,7 @@ public class Player : MonoBehaviour
     private void Update() //input de la tastatura
     {
         if (isDead) return;
-        
+
         currentHealth = PlayerPrefs.GetInt("CurrentHealth");
         // Jump input
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded) //verifica daca playerul este pe pamant si apasa spatiu
@@ -107,7 +107,7 @@ public class Player : MonoBehaviour
             lastAKeyTime = Time.time;
         }
 
-        anim.SetBool("grounded", isGrounded);
+        anim.SetTrigger("jump");
     }
 
     private void FixedUpdate() //logica fizica
