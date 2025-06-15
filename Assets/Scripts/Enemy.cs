@@ -121,7 +121,7 @@ public class Enemy : BaseEnemy
             for (int i = 0; i < coinCount; i++)
             {
                 // Spawn a coin at the monster's position with a random offset (to avoid overlapping coins)
-                Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0);
+                Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f) + 0.2f, 0);
                 Instantiate(coinPrefab, transform.position + randomOffset, Quaternion.identity);
             }
         }
