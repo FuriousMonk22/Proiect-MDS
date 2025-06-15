@@ -1,41 +1,45 @@
 using UnityEngine;
 
-public class Flame : MonoBehaviour
+public class FlameHoming : MonoBehaviour
 {
     public int damage = 10;
     public float lifeTime = 3f;
+    public float knockbackForce = 5f;
 
-    protected Rigidbody2D rb;
+    private Rigidbody2D rb;
 
-    protected void Start()
+    void Start()
     {
-        Destroy(gameObject, lifeTime); // dispare după ceva timp
-
-        // setare unghi
         rb = GetComponent<Rigidbody2D>();
-        float angle = Mathf.Atan2(rb.linearVelocity.y, rb.linearVelocity.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        Destroy(gameObject, lifeTime); // auto-destroy
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        Vector2 direction = GetComponent<Rigidbody2D>().linearVelocity.normalized;
-        Debug.DrawLine(transform.position, transform.position + (Vector3)(direction * 0.5f), Color.red);
-        CustomUpdate();
-    }
-    
-    protected virtual void CustomUpdate()
-    {
-        // Your specific logic here
+        if (rb != null)
+        {
+            Vector2 direction = rb.linearVelocity.normalized;
+            Debug.DrawLine(transform.position, transform.position + (Vector3)(direction * 0.5f), Color.red);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            // Apply damage
             if (PlayerPrefs.GetInt("CurrentHealth") > 0)
                 PlayerPrefs.SetInt("CurrentHealth", PlayerPrefs.GetInt("CurrentHealth") - damage);
+
+            // Apply knockback
+            Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+            if (playerRb != null)
+            {
+                Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
+                playerRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+            }
         }
+
         Destroy(gameObject);
     }
 }
