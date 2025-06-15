@@ -2,6 +2,8 @@
 
 public class Barrier : MonoBehaviour
 {
+    [SerializeField] public GameObject boss;  // Drag your Player GameObject here
+
     [Header("Obiectul barrieră pe care vrei să-l reactivezi")]
     public GameObject[] barriersToEnable;
 
@@ -23,6 +25,7 @@ public class Barrier : MonoBehaviour
 
             // 3) Dezactivează-te pe tine însuți
             gameObject.SetActive(false);
+            boss.SetActive(true);
         }
     }
 }
