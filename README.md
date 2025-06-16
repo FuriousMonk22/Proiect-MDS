@@ -3,6 +3,8 @@
 
 🔗 [Trello Board](https://trello.com/b/PFv4H5ZT/proiect-mds)
 
+[Gameplay Demo (YouTube)](https://www.youtube.com/watch?v=XlhrTKNnZNw)
+
 ## User Stories
 <details>
 Game Concept User Stories
@@ -57,7 +59,7 @@ As a player, I want an inventory system to store and manage my items, so that I 
   Codul din comentarii este in principal adaugat de Copilot/GPT.
 
 ## Design Patterns
-  Jocul foloseste Design Patterns de OOP pentru implementarea inamicilor (Ex: functia TakeDamage) si atacurile lor (interactiune cu player).
+  Jocul foloseste Design Patterns de OOP pentru implementarea inamicilor (Ex: functia TakeDamage) si atacurile lor (interactiune cu player). [HomingFlame](https://github.com/FuriousMonk22/Proiect-MDS/blob/main/Assets/Scripts/FlameHoming.cs) [Flame](https://github.com/FuriousMonk22/Proiect-MDS/blob/main/Assets/Scripts/Flame.cs)
 
 ## Prompt engineering:
 <details>
